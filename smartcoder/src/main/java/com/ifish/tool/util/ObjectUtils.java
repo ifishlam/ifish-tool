@@ -12,6 +12,14 @@ public class ObjectUtils {
         System.err.println("[ERROR] " + msg);
     }
 
+    public static boolean isEmpty(String msg) {
+
+        if (msg == null || "".equalsIgnoreCase(msg.trim())) {
+            return true;
+        }
+        return false;
+    }
+
     public static String convert2JavaDataType(String sqlDataType) {
         String result = "";
 
@@ -24,7 +32,7 @@ public class ObjectUtils {
         } else if ("date".equalsIgnoreCase(sqlDataType)) {
             result = "Date";
         } else if ("decimal".equalsIgnoreCase(sqlDataType) || "numeric".equalsIgnoreCase(sqlDataType)
-                || "smallmoney".equalsIgnoreCase(sqlDataType)|| "money".equalsIgnoreCase(sqlDataType)) {
+                || "smallmoney".equalsIgnoreCase(sqlDataType) || "money".equalsIgnoreCase(sqlDataType)) {
             result = "BigDecimal";
         } else {
             result = sqlDataType;

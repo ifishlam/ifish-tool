@@ -2,6 +2,7 @@ package com.ifish.tool.starter;
 
 import com.ifish.tool.bean.ColumnBean;
 import com.ifish.tool.util.DataBaseUtils;
+import com.ifish.tool.util.FileUtils;
 import com.ifish.tool.util.FreeMarkerUtils;
 import com.ifish.tool.util.ObjectUtils;
 
@@ -45,6 +46,8 @@ public class SmartCoderMain {
             level = "core";
         }
 
+        copyInitialFiles();
+
         // Do Generate
         Map<String, List<ColumnBean>> tables = DataBaseUtils.getTableDetails(table);
 
@@ -67,5 +70,17 @@ public class SmartCoderMain {
         ObjectUtils.debugLog("Start to generate file for table --> " + columnList.get(0).getTableName() + "; module --> " + module + "; level --> " + level);
         FreeMarkerUtils.createFile(module, level, columnList);
         ObjectUtils.debugLog("END... \n");
+    }
+
+    private static void copyInitialFiles() {
+
+        // properties file
+        FileUtils.copyFile(null, "app.properties", FileUtils.USER_CONFIG_DIRECTORY, null);
+
+        // freemarker template files
+        FileUtils.copyFile(null, "Bean.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
+        FileUtils.copyFile(null, "DAO.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
+        FileUtils.copyFile(null, "BasicView.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
+        FileUtils.copyFile(null, "ListView.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
     }
 }

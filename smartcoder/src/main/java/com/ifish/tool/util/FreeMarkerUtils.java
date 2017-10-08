@@ -14,7 +14,7 @@ import java.util.Properties;
 
 public class FreeMarkerUtils {
 
-    private static String ROOT_PATH_TEMPLATE = FreeMarkerUtils.class.getClassLoader().getResource("Templates").getPath();
+//    private static String ROOT_PATH_TEMPLATE = FreeMarkerUtils.class.getClassLoader().getResource("Templates").getPath();
 
     public static void createFile(String module, String level, List<ColumnBean> columnList) {
 
@@ -92,16 +92,16 @@ public class FreeMarkerUtils {
 
         try {
             Configuration config = new Configuration(Configuration.VERSION_2_3_26);
-            config.setDirectoryForTemplateLoading(new File(ROOT_PATH_TEMPLATE));
+            config.setDirectoryForTemplateLoading(new File(FileUtils.USER_TEMPLATE_DIRECTORY));
 
             Template template = config.getTemplate(templateName);
             template.process(templateParams, FileUtils.createWriter(newFilePathName, newFileName));
 
             ObjectUtils.debugLog("New file was generated to " + newFilePathName + newFileName);
         } catch (IOException e) {
-            e.printStackTrace();
+            ObjectUtils.errorLog("Templates NOT found ! " + e.getMessage());
         } catch (TemplateException e) {
-            e.printStackTrace();
+            ObjectUtils.errorLog("Templates Exception ! " + e.getMessage());
         }
     }
 }
