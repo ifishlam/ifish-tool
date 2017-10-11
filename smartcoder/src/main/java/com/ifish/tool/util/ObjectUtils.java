@@ -7,6 +7,11 @@ public class ObjectUtils {
         System.out.println("[DEBUG] " + msg);
     }
 
+    public static void warnLog(String msg) {
+
+        System.out.println("[WARN] " + msg);
+    }
+
     public static void errorLog(String msg) {
 
         System.err.println("[ERROR] " + msg);

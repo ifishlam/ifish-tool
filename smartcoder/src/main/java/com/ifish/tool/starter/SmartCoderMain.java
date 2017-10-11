@@ -5,7 +5,6 @@ import com.ifish.tool.util.DataBaseUtils;
 import com.ifish.tool.util.FileUtils;
 import com.ifish.tool.util.FreeMarkerUtils;
 import com.ifish.tool.util.ObjectUtils;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,7 @@ public class SmartCoderMain {
         String table = null;
         String module = null;
         String level = null;
+        String overrideConfig = null;
 
         for (int i = 0; i < args.length; i++) {
             if ("-table".equalsIgnoreCase(args[i]) && args[i + 1] != null) {
@@ -26,6 +26,9 @@ public class SmartCoderMain {
                 module = args[i + 1].trim().toLowerCase();
             } else if ("-level".equalsIgnoreCase(args[i]) && args[i + 1] != null) {
                 level = args[i + 1].trim().toLowerCase();
+            }
+            else if ("-oc".equalsIgnoreCase(args[i]) && args[i + 1] != null) {
+                overrideConfig = args[i + 1].trim().toLowerCase();
             }
         }
 
@@ -36,17 +39,22 @@ public class SmartCoderMain {
         }
 
         if (module == null) {
-            ObjectUtils.debugLog("未找到参数(-module)！将采用系统默认配置生成(bean,dao,basicview,listview)！");
+            ObjectUtils.warnLog("未找到参数(-module)！将采用系统默认配置生成(bean,dao,basicview,listview)！");
             module = "bean,dao,basicview,listview";
         }
         String[] moduleList = module.split(",");
 
         if (level == null) {
-            ObjectUtils.debugLog("未找到参数(-level)！将采用系统默认配置生成(core)！");
+            ObjectUtils.warnLog("未找到参数(-level)！将采用系统默认配置生成(core)！");
             level = "core";
         }
 
-        copyInitialFiles();
+        if (overrideConfig == null) {
+            ObjectUtils.warnLog("未找到参数(-oc)！将不覆盖原有的配置文件！若要使用系统默认配置文件，请输入参数 -oc Y");
+            overrideConfig = "N";
+        }
+
+        copyInitialFiles(overrideConfig);
 
         // Do Generate
         Map<String, List<ColumnBean>> tables = DataBaseUtils.getTableDetails(table);
@@ -72,15 +80,23 @@ public class SmartCoderMain {
         ObjectUtils.debugLog("END... \n");
     }
 
-    private static void copyInitialFiles() {
+    private static void copyInitialFiles(String overrideConfig) {
 
         // properties file
-        FileUtils.copyFile(null, "app.properties", FileUtils.USER_CONFIG_DIRECTORY, null);
+        if(FileUtils.isFileExist(FileUtils.USER_CONFIG_DIRECTORY, "app.properties") && "N".equalsIgnoreCase(overrideConfig)){
+            ObjectUtils.debugLog("将采用此目录下的用户配置文件 --> " + FileUtils.USER_CONFIG_DIRECTORY);
+        }else{
+            FileUtils.copyFile(null, "app.properties", FileUtils.USER_CONFIG_DIRECTORY, null);
+        }
 
         // freemarker template files
-        FileUtils.copyFile(null, "Bean.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
-        FileUtils.copyFile(null, "DAO.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
-        FileUtils.copyFile(null, "BasicView.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
-        FileUtils.copyFile(null, "ListView.ftl", FileUtils.USER_TEMPLATE_DIRECTORY, null);
+        String[] templateList  = new String[]{"Bean.ftl", "DAO.ftl", "BasicView.ftl", "ListView.ftl"};
+        for(String t : templateList){
+            if(FileUtils.isFileExist(FileUtils.USER_TEMPLATE_DIRECTORY, t) && "N".equalsIgnoreCase(overrideConfig)){
+                ObjectUtils.debugLog("将采用此目录下的用户模板文件 --> " + FileUtils.USER_TEMPLATE_DIRECTORY);
+            }else{
+                FileUtils.copyFile(null, t, FileUtils.USER_TEMPLATE_DIRECTORY, null);
+            }
+        }
     }
 }

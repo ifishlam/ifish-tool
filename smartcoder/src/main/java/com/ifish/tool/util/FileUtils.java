@@ -5,6 +5,7 @@ import java.util.Properties;
 
 public class FileUtils {
 
+    public static final String FILE_UTILS_FOLDER_SEPARATOR = "\\";
     public static final String USER_CONFIG_DIRECTORY = getUserDirectory() + "\\config\\";
     public static final String USER_TEMPLATE_DIRECTORY = getUserDirectory() + "\\config\\Templates\\";
 
@@ -39,6 +40,31 @@ public class FileUtils {
             e.printStackTrace();
         }
         return writer;
+    }
+
+    public static boolean isFileExist(String path, String name) {
+
+        String fileDir = getFileDirectory(path, name);
+        File file = new File(fileDir);
+
+        return file.isFile();
+    }
+
+    public static String getFileDirectory(String path, String file) {
+
+        if (ObjectUtils.isEmpty(file)) {
+            return null;
+        }
+
+        if (ObjectUtils.isEmpty(path)) {
+            return file;
+        }
+
+        if (path.endsWith(FILE_UTILS_FOLDER_SEPARATOR)) {
+            return path + file;
+        } else {
+            return path + FILE_UTILS_FOLDER_SEPARATOR + file;
+        }
     }
 
     public static void copyFile(String srcFilePath, String srcFileName, String targetFilePath, String targetFileName) {
